@@ -1,0 +1,18 @@
+name: Windows-RDP-6-Hours
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Setup Remote Desktop
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+      - name: Download and Run Cloudflare
+        run: |
+          Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -OutFile cf.exe
+          Start-Process ./cf.exe -ArgumentList "tunnel --url rdp://localhost:3389"
+      - name: Keep Alive (6 Hours)
+        run: |
+          Write-Host "Machine on hai... Aglay 6 ghantay tak band nahi hogi!"
+          sleep 21600
